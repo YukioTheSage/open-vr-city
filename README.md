@@ -9,10 +9,11 @@ A browser-first, cross-platform open-world social city built with **Three.js**, 
 
 ## What's Working Now (v0.1)
 
-- **3D Central Plaza & Procedural City Block:** Lightweight Three.js scene with open plaza, animated central monument, and procedural skyline (`public/js/scene.js`).
+- **160-Building City in 2 GPU Draw Calls:** Procedural 13×13 skyline around an open 3×3 Central Plaza rendered via two `THREE.InstancedMesh` batches (towers + neon trims) with dynamic per-frame instance compaction (`public/js/scene.js`).
+- **Real-Time Frustum + Software Occlusion Culling:** Zero-stall front-to-back `96×54` conservative software depth-buffer culler (`public/js/culling.js`) that drops off-screen and fully occluded towers before GPU submission (works identically on desktop and WebXR), complete with live HUD draw-call telemetry, `O` toggle, and a real-time top-down Cull Radar (`M`).
 - **Cross-Platform Desktop + WebXR Support:** Native `VRButton` with automatic WebXR floor-height rig adjustment (`sessionstart`/`sessionend`), plus frame-rate-independent (`dt`) WASD / Arrow movement and drag-to-look desktop controls (`public/js/controls.js`).
 - **Real-Time WebSocket Multiplayer:** Plaza-ring spawning, smooth remote avatar interpolation, dirty-checked 20Hz position sync, auto-reconnect with exponential backoff, server-side coordinate validation/clamping, and heartbeat pruning for dead sockets (`server.js`, `public/js/network.js`).
-- **Automated Integration Tests:** Built-in `node:test` suite verifying HTTP assets, `/health`, multiplayer join/move/leave broadcasts, payload validation, and world clamping (`test/server.test.js`).
+- **Automated Unit & Integration Tests:** Built-in `node:test` suite verifying occlusion culling math (`test/culling.test.js`) and HTTP/WebSocket multiplayer sync (`test/server.test.js`).
 
 ---
 
@@ -31,7 +32,7 @@ npm test
 ```
 
 ### Controls
-- **Desktop:** `WASD` or Arrow keys to move, click-and-drag on the canvas to turn.
+- **Desktop:** `WASD` or Arrow keys to move, click-and-drag on the canvas to turn, `O` to toggle occlusion culling, `M` to toggle the top-down cull radar.
 - **VR Headset:** Click **Enter VR** (`VRButton`) in any WebXR-capable browser (e.g., Meta Quest Browser).
 
 ---
@@ -44,12 +45,14 @@ The codebase is intentionally modular with zero bundler overhead so workstreams 
 open-vr-city/
 ├── server.js               # Express + ws multiplayer server & Vercel entrypoint
 ├── test/
-│   └── server.test.js      # Node integration tests (HTTP + WebSocket protocol)
+│   ├── culling.test.js     # Unit tests for 160-building grid & software occlusion culler
+│   └── server.test.js      # Integration tests (HTTP assets, /health, WebSocket protocol)
 └── public/
-    ├── index.html          # Minimal HUD shell & Three.js CDN importmap
+    ├── index.html          # HUD, live draw-call/cull telemetry, radar canvas & importmap
     └── js/
-        ├── main.js         # Animation loop wiring world, controls, and network
-        ├── scene.js        # Three.js world, procedural city block, avatar pooling/lerp
+        ├── main.js         # Animation loop, HUD telemetry, and top-down cull radar
+        ├── scene.js        # 2-draw-call InstancedMesh city (160 towers), lighting, avatars
+        ├── culling.js      # Zero-dep frustum + 96x54 conservative depth-buffer occlusion culler
         ├── controls.js     # Delta-time desktop controls & WebXR session height handling
         └── network.js      # WebSocket client, auto-reconnect, dirty-checked state sync
 ```

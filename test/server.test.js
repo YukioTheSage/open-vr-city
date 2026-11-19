@@ -48,7 +48,13 @@ test('Open VR City HTTP endpoints and WebSocket multiplayer sync', async (t) => 
     assert.match(html, /Open VR City/);
     assert.match(html, /\/js\/main\.js/);
 
-    for (const asset of ['/js/main.js', '/js/scene.js', '/js/controls.js', '/js/network.js']) {
+    for (const asset of [
+      '/js/main.js',
+      '/js/scene.js',
+      '/js/culling.js',
+      '/js/controls.js',
+      '/js/network.js',
+    ]) {
       const res = await fetch(`${baseUrl}${asset}`);
       assert.equal(res.status, 200, `Expected 200 for ${asset}`);
     }
