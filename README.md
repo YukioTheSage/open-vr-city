@@ -38,7 +38,7 @@ npm test
 
 ## Architecture
 
-The codebase is intentionally modular with zero bundler overhead so parallel engineering agents can own distinct modules without merge conflicts:
+The codebase is intentionally modular with zero bundler overhead so workstreams stay decoupled across distinct modules:
 
 ```text
 open-vr-city/
@@ -79,23 +79,23 @@ open-vr-city/
 
 ---
 
-## Devin Bots Parallel Engineering Roadmap
+## v0.2 Roadmap (Parallel Workstreams)
 
-Each track has isolated file ownership and concrete acceptance criteria so parallel agents can ship PRs concurrently:
+Each track has isolated file ownership and concrete acceptance criteria so contributors can ship PRs concurrently without merge conflicts:
 
-### Track 1 — Multiplayer Scaling & Spatial Voice Agent (`server.js`, `server/*`, `public/js/network.js`)
+### Track 1 — Multiplayer Scaling & Spatial Voice (`server.js`, `server/*`, `public/js/network.js`)
 - Replace full-room broadcast with spatial grid/interest-management partitioning for 50+ concurrent players per district.
 - Add Redis pub/sub adapter so multiple server instances share district state.
 - Implement WebRTC signaling + proximity voice chat attenuation based on avatar distance.
 - **Done when:** Load tests sustain 50+ simultaneous bots at <100ms p95 broadcast latency across horizontally scaled instances.
 
-### Track 2 — WebXR Locomotion & World Building Agent (`public/js/controls.js`, `public/js/scene.js`)
+### Track 2 — WebXR Locomotion & World Building (`public/js/controls.js`, `public/js/scene.js`)
 - Add WebXR controller thumbstick smooth locomotion, snap-turning, and arc teleportation.
 - Add avatar head/hand pose syncing, player nameplates, and building collision detection.
 - Build interactive district venues (plaza portals, shared media screens, seated social zones).
 - **Done when:** Full VR session supports controller movement + hand tracking sync without breaking desktop controls.
 
-### Track 3 — QA, CI & Load Testing Agent (`test/*`, `.github/workflows/*`)
+### Track 3 — QA, CI & Load Testing (`test/*`, `.github/workflows/*`)
 - Add GitHub Actions CI running `npm test` + headless browser E2E checks on every PR.
 - Build a WebSocket bot-swarm load generator (`npm run loadtest`) measuring tick jitter, packet loss, and memory growth under 50–200 simulated avatars.
 - Add client FPS / WebGL regression benchmarks.
